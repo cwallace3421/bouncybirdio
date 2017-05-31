@@ -18,23 +18,39 @@ server.listen(process.env.PORT || 8081, function() {
 // Private _name
 // Static $Name
 // Object Name
+const Game_Dimensions = {
+	width: 800,
+	height: 600
+};
+const Player_Dimensions = {
+	width: 34,
+	height: 24
+};
 
-let Tick_Rate = 20;
-let Socket_Map = {};
+const Tick_Rate = 20;
+const Gravity = Player_Dimensions.height;
+const Air_Resistance = Player_Dimensions.width / 4;
+const X_Force = Player_Dimensions.width;
+const Y_Force = Gravity + (Player_Dimensions.height * 60);
+const Socket = {
+	$Map: {}
+};
 
-let Player = function(id, nick, x, y, color) {
+const Player = function(id, nick, x, y, color) {
 	let _self = {
 		id: id,
 		nick: nick,
 		active: false,
-		x: 800 / 2,
+		x: Math.floor(Player_Dimensions.width * 2),
 		xvel: 0,
-		xvel_max: 0,
-		y: 600 / 3,
 		yvel: 0,
-		yvel_max: 0,
+		y: Math.floor((Game_Dimensions.height / 2) - (Player_Dimensions.height / 2)),
 		pressingjump: false,
 		previous: null
+	};
+
+	_self.start = function() {
+		_self.active = true;
 	};
 
 	_self.update = function() {
@@ -45,12 +61,23 @@ let Player = function(id, nick, x, y, color) {
 	};
 
 	_self.updatepos = function() {
+		_self.xvel = _self.xvel - Air_Resistance;
+		if (_self.xvel < 0) 
+			_self.xvel = 0;
+
+		_self.yvel = _self.yvel + Gravity;
+		if (_self.yvel <= Gravity) 
+			_self.yvel = Gravity;
+		
 		if (_self.pressingjump) {
 			_self.pressingjump = false;
+			_self.xvel = X_Force;
+			_self.yvel = -Y_Force;
 		}
 
-		_self.x += 16 / Tick_Rate;
-		_self.y += 24 / Tick_Rate;
+		// Update Position
+		_self.x += _self.xvel / (1000 / Tick_Rate);
+		_self.y += _self.yvel / (1000 / Tick_Rate);
 
 		_self.updatecollision();
 	};
@@ -61,10 +88,17 @@ let Player = function(id, nick, x, y, color) {
 		}
 	};
 
+	_self.jump = function() {
+		_self.pressingjump = true;
+	};
+
 	_self.reset = function() {
 		_self.active = false;
-		_self.x = (Math.random() * 600) + 100,
-		_self.y = 600 / 3
+		_self.pressingjump = false;
+		_self.xvel = 0;
+		_self.yvel = 0;
+		_self.x = Math.floor(Player_Dimensions.width * 2),
+		_self.y = Math.floor((Game_Dimensions.height / 2) - (Player_Dimensions.height / 2))
 	};
 
 	_self.getinitpacket = function() {
@@ -103,14 +137,16 @@ Player.$Connect = function(socket) {
 		switch (data.type) {
 			case 'jump': {
 				if (data.state === 'down') {
-					player.pressingjump = true;
-					debug(1, player.id + ' has jumped');
+					if (player.active) {
+						player.jump();
+						debug(1, player.id + ' has jumped');
+					}
 				}
 				break;
 			}
 			case 'start': {
 				if (data.state === 'up') {
-					player.active = true;
+					player.start();
 					debug(1, player.id + ' has started');
 				}
 				break;
@@ -161,13 +197,13 @@ Player.$UpdatePlayers = function() {
 
 io.on('connection', function(socket) {
 
-	Socket_Map[socket.id] = socket;
+	Socket.$Map[socket.id] = socket;
 
 	Player.$Connect(socket);
 
 	socket.on('disconnect', function() {
 		Player.$Disconnect(socket);
-		delete Socket_Map[socket.id];
+		delete Socket.$Map[socket.id];
 	});
 
 });
@@ -193,8 +229,8 @@ setInterval(function() {
 		Update_Packet['remove'] = Player.$ToRemove;
 	}
 
-	for (let s in Socket_Map) {
-		Socket_Map[s].emit('update', Update_Packet);
+	for (let s in Socket.$Map) {
+		Socket.$Map[s].emit('update', Update_Packet);
 	}
 
 	// Cleanup
@@ -202,7 +238,7 @@ setInterval(function() {
 	Player.$ToRemove = [];
 
 	debug(5, 'Update_Packet: ', Update_Packet);
-}, Tick_Rate);
+}, 1000 / Tick_Rate);
 
 
 /*
