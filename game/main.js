@@ -5,6 +5,7 @@ window.onload = function() {
     game = new Phaser.Game(800, 600, Phaser.AUTO, 'container');
 
     game.state.add('Game', Game);
+    game.state.add('GameError', GameError);
     game.state.start('Game');
 
 };

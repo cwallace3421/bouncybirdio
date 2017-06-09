@@ -28,6 +28,12 @@ Client.Connect = function() {
 			}
 		}
 	});
+
+	Client.socket.on('connect_error', function() {
+		Client.socket.disconnect();
+		GameError.setmessage('Server Unavailable');
+		game.state.start('GameError');
+	});
 };
 
 Client.Start = function() {
