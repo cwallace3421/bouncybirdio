@@ -2,4 +2,13 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+}
+
+#help {
+	display: block;
+}
+
+#help span {
+	display: block;
 }

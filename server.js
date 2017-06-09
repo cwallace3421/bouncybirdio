@@ -28,10 +28,10 @@ const Player_Dimensions = {
 };
 
 const Tick_Rate = 20;
-const Gravity = Player_Dimensions.height;
-const Air_Resistance = Player_Dimensions.width / 4;
-const X_Force = Player_Dimensions.width;
-const Y_Force = Gravity + (Player_Dimensions.height * 60);
+const Delta = 1.0 / Tick_Rate;
+const Gravity = Player_Dimensions.height * 18;
+const MoveVel = Player_Dimensions.width * 2;
+const JumpVel = Player_Dimensions.height * 11;
 const Socket = {
 	$Map: {}
 };
@@ -41,10 +41,15 @@ const Player = function(id, nick, x, y, color) {
 		id: id,
 		nick: nick,
 		active: false,
+
 		x: Math.floor(Player_Dimensions.width * 2),
-		xvel: 0,
-		yvel: 0,
+		xvel: MoveVel,
+		xaccl: 0,
+
 		y: Math.floor((Game_Dimensions.height / 2) - (Player_Dimensions.height / 2)),
+		yvel: 0,
+		yaccl: Gravity,
+
 		pressingjump: false,
 		previous: null
 	};
@@ -61,23 +66,16 @@ const Player = function(id, nick, x, y, color) {
 	};
 
 	_self.updatepos = function() {
-		_self.xvel = _self.xvel - Air_Resistance;
-		if (_self.xvel < 0) 
-			_self.xvel = 0;
 
-		_self.yvel = _self.yvel + Gravity;
-		if (_self.yvel <= Gravity) 
-			_self.yvel = Gravity;
-		
+		_self.yvel += _self.yaccl * Delta;
+
 		if (_self.pressingjump) {
 			_self.pressingjump = false;
-			_self.xvel = X_Force;
-			_self.yvel = -Y_Force;
+			_self.yvel = -JumpVel;
 		}
 
-		// Update Position
-		_self.x += _self.xvel / (1000 / Tick_Rate);
-		_self.y += _self.yvel / (1000 / Tick_Rate);
+		_self.y += _self.yvel * Delta;
+		_self.x += _self.xvel * Delta;
 
 		_self.updatecollision();
 	};
@@ -95,10 +93,9 @@ const Player = function(id, nick, x, y, color) {
 	_self.reset = function() {
 		_self.active = false;
 		_self.pressingjump = false;
-		_self.xvel = 0;
 		_self.yvel = 0;
-		_self.x = Math.floor(Player_Dimensions.width * 2),
-		_self.y = Math.floor((Game_Dimensions.height / 2) - (Player_Dimensions.height / 2))
+		_self.x = Math.floor(Player_Dimensions.width * 2);
+		_self.y = Math.floor((Game_Dimensions.height / 2) - (Player_Dimensions.height / 2));
 	};
 
 	_self.getinitpacket = function() {
