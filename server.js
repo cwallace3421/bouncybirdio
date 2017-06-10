@@ -47,7 +47,7 @@ const Player = function(id, nick, x, y, color) {
 		xaccl: 0,
 
 		y: Math.floor((Game_Dimensions.height / 2) - (Player_Dimensions.height / 2)),
-		yvel: 0,
+		yvel: -JumpVel,
 		yaccl: Gravity,
 
 		pressingjump: false,
