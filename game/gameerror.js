@@ -11,6 +11,7 @@ GameError.preload = function() {
 
 GameError.create = function() {
 	game.camera.reset();
+	game.world.setBounds(0, 0, game.camera.width, game.camera.height);
 	game.stage.setBackgroundColor(0x000000);
 	let = textobj = game.add.text(game.world.centerX, game.world.centerY, "UNKNOWN");
 	textobj.anchor.setTo(0.5);
