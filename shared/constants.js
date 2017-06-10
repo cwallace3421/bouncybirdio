@@ -13,7 +13,7 @@
 
 	exports.DEADZONEX = exports.PLAYERWIDTH * 2;
 
-	exports.STARTX = exports.VIEWWIDTH * 2;
+	exports.STARTX = exports.PLAYERWIDTH * 2;
 	exports.STARTY = Math.floor((exports.WORLDHEIGHT / 2) - exports.PLAYERHEIGHT / 2);
 
 	exports.SERVERTICK = 20;

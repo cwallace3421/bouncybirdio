@@ -18,7 +18,7 @@ Game.create = function() {
 	game.world.setBounds(0, 0, Constants.WORLDWIDTH, Constants.WORLDHEIGHT);
 
 	Game.sprBackground = game.add.tileSprite(0, 0, Constants.WORLDWIDTH, Constants.WORLDHEIGHT, 'background_repeating');
-	Game.sprPlaceholder = game.add.sprite(0, 0, 'pipe-down');
+	Game.sprPlaceholder = game.add.sprite(50, 0, 'pipe-down');
 
 	Game.PlayerMap = {};
 	Game.PlayerListNewState = [];
