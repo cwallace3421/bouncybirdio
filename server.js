@@ -93,7 +93,7 @@ const Player = function(id, nick, x, y, color) {
 	_self.reset = function() {
 		_self.active = false;
 		_self.pressingjump = false;
-		_self.yvel = 0;
+		_self.yvel = -JumpVel;
 		_self.x = Math.floor(Player_Dimensions.width * 2);
 		_self.y = Math.floor((Game_Dimensions.height / 2) - (Player_Dimensions.height / 2));
 	};
