@@ -11,13 +11,13 @@ Game.preload = function() {
 	game.load.image('pipe-up', 'assets/pipe-up.png');
 	game.load.image('pipe-down', 'assets/pipe-down.png');
 
-	game.load.spritesheet('character', 'assets/character.png', 34, 24, 4);
+	game.load.spritesheet('character', 'assets/character.png', Constants.PLAYERWIDTH, Constants.PLAYERHEIGHT, 4);
 };
 
 Game.create = function() {
-	game.world.setBounds(0, 0, game.width * 10, game.height);
+	game.world.setBounds(0, 0, Constants.WORLDWIDTH, Constants.WORLDHEIGHT);
 
-	Game.sprBackground = game.add.tileSprite(0, 0, game.width * 10, game.height, 'background_repeating');
+	Game.sprBackground = game.add.tileSprite(0, 0, Constants.WORLDWIDTH, Constants.WORLDHEIGHT, 'background_repeating');
 	Game.sprPlaceholder = game.add.sprite(0, 0, 'pipe-down');
 
 	Game.PlayerMap = {};
@@ -51,13 +51,13 @@ Game.update = function() {
 
 	if (game.camera.target == null && Game.PlayerMap[Client.socket.id]) {
 		game.camera.follow(Game.PlayerMap[Client.socket.id].sprite);
-		game.camera.deadzone = new Phaser.Rectangle(Math.floor(34 * 2), 0, 1, game.height);
+		game.camera.deadzone = new Phaser.Rectangle(Constants.DEADZONEX, 0, 1, Constants.VIEWHEIGHT);
 	}
 };
 
 Game.addPlayer = function(player) {
 	console.log('Creating player: ' + player.id);
-	player.sprite = game.add.sprite(34, 24, 'character');
+	player.sprite = game.add.sprite(Constants.PLAYERWIDTH, Constants.PLAYERHEIGHT, 'character');
 	player.sprite.animations.add('flap');
 	player.sprite.animations.play('flap', 8, true);
 	player.sprite.x = player.x;

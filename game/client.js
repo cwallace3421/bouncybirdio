@@ -40,8 +40,8 @@ Client.Start = function() {
 	hasSocket();
 	console.log('Client.Start');
 	Client.socket.emit('keypress', {
-		type: 'start',
-		state: 'up'
+		type: Constants.START,
+		state: Constants.KEYUP
 	});
 };
 
@@ -49,8 +49,8 @@ Client.Jump = function() {
 	hasSocket();
 	console.log('Client.Jump');
 	Client.socket.emit('keypress', {
-		type: 'jump',
-		state: 'down'
+		type: Constants.JUMP,
+		state: Constants.KEYDOWN
 	});
 };
 
@@ -58,8 +58,8 @@ Client.Reset = function() {
 	hasSocket();
 	console.log('Client.Reset');
 	Client.socket.emit('keypress', {
-		type: 'reset',
-		state: 'up'
+		type: Constants.RESET,
+		state: Constants.KEYUP
 	});
 };
 
