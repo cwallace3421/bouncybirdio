@@ -21,11 +21,11 @@
 
 	exports.GRAVITY = exports.PLAYERHEIGHT * 18;
 	exports.MOVEVELOCITY = exports.PLAYERWIDTH * 2;
-	exports.JUMPVELOCITY = exports.PLAYERHEIGHT * 11;
+	exports.JUMPVELOCITY = -(exports.PLAYERHEIGHT * 11);
 
-	exports.TYPESTART = 'start';
-	exports.TYPEJUMP = 'jump';
-	exports.TYPERESET = 'reset';
+	exports.START = 'start';
+	exports.JUMP = 'jump';
+	exports.RESET = 'reset';
 
 	exports.KEYUP = 'up';
 	exports.KEYDOWN = 'down';

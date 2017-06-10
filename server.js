@@ -2,36 +2,21 @@ var express = require('express');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
+var _ = require('./shared/constants.js');
 
 app.use('/css', express.static(__dirname + '/css'));
 app.use('/game', express.static(__dirname + '/game'));
+app.use('/shared', express.static(__dirname + '/shared'));
 app.use('/assets', express.static(__dirname + '/assets'));
 
 app.get('/', function(request, response) {
 	response.sendFile(__dirname + '/index.html');
 });
 
-server.listen(process.env.PORT || 8081, function() {
+server.listen(process.env.PORT || _.PORT, function() {
 	console.log('Listening on ' + server.address().port);
 });
 
-// Private _name
-// Static $Name
-// Object Name
-const Game_Dimensions = {
-	width: 800,
-	height: 600
-};
-const Player_Dimensions = {
-	width: 34,
-	height: 24
-};
-
-const Tick_Rate = 20;
-const Delta = 1.0 / Tick_Rate;
-const Gravity = Player_Dimensions.height * 18;
-const MoveVel = Player_Dimensions.width * 2;
-const JumpVel = Player_Dimensions.height * 11;
 const Socket = {
 	$Map: {}
 };
@@ -42,13 +27,13 @@ const Player = function(id, nick, x, y, color) {
 		nick: nick,
 		active: false,
 
-		x: Math.floor(Player_Dimensions.width * 2),
-		xvel: MoveVel,
+		x: _.STARTX,
+		xvel: _.MOVEVELOCITY,
 		xaccl: 0,
 
-		y: Math.floor((Game_Dimensions.height / 2) - (Player_Dimensions.height / 2)),
-		yvel: -JumpVel,
-		yaccl: Gravity,
+		y: _.STARTY,
+		yvel: _.JUMPVELOCITY,
+		yaccl: _.GRAVITY,
 
 		pressingjump: false,
 		previous: null
@@ -67,15 +52,15 @@ const Player = function(id, nick, x, y, color) {
 
 	_self.updatepos = function() {
 
-		_self.yvel += _self.yaccl * Delta;
+		_self.yvel += _self.yaccl * _.SERVERDELTA;
 
 		if (_self.pressingjump) {
 			_self.pressingjump = false;
-			_self.yvel = -JumpVel;
+			_self.yvel = _.JUMPVELOCITY;
 		}
 
-		_self.y += _self.yvel * Delta;
-		_self.x += _self.xvel * Delta;
+		_self.y += _self.yvel * _.SERVERDELTA;
+		_self.x += _self.xvel * _.SERVERDELTA;
 
 		_self.updatecollision();
 	};
@@ -93,9 +78,9 @@ const Player = function(id, nick, x, y, color) {
 	_self.reset = function() {
 		_self.active = false;
 		_self.pressingjump = false;
-		_self.yvel = -JumpVel;
-		_self.x = Math.floor(Player_Dimensions.width * 2);
-		_self.y = Math.floor((Game_Dimensions.height / 2) - (Player_Dimensions.height / 2));
+		_self.yvel = _.JUMPVELOCITY;
+		_self.x = _.STARTX;
+		_self.y = _.STARTY;
 	};
 
 	_self.getinitpacket = function() {
@@ -132,8 +117,8 @@ Player.$Connect = function(socket) {
 		//data.type, ie. jump, attack etc
 		//data.state, up down
 		switch (data.type) {
-			case 'jump': {
-				if (data.state === 'down') {
+			case _.JUMP : {
+				if (data.state == _.KEYDOWN) {
 					if (player.active) {
 						player.jump();
 						debug(1, player.id + ' has jumped');
@@ -141,15 +126,15 @@ Player.$Connect = function(socket) {
 				}
 				break;
 			}
-			case 'start': {
-				if (data.state === 'up') {
+			case _.START : {
+				if (data.state == _.KEYUP) {
 					player.start();
 					debug(1, player.id + ' has started');
 				}
 				break;
 			}
-			case 'reset': {
-				if (data.state === 'up') {
+			case _.RESET : {
+				if (data.state == _.KEYUP) {
 					player.reset();
 					debug(1, player.id + ' has reset');
 				}
@@ -235,7 +220,7 @@ setInterval(function() {
 	Player.$ToRemove = [];
 
 	debug(5, 'Update_Packet: ', Update_Packet);
-}, 1000 / Tick_Rate);
+}, 1000 / _.SERVERTICK);
 
 
 /*
