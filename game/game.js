@@ -2,39 +2,28 @@ var Game = {};
 
 Game.init = function() {
 	game.stage.disableVisibilityChange = true;
+	game.renderer.renderSession.roundPixels = true
 };
 
 Game.preload = function() {
 	game.load.image('background_repeating', 'assets/background_repeating.png');
-	game.load.spritesheet('character', 'assets/character.png', 34, 24, 4);
+	game.load.image('pipe', 'assets/pipe.png');
+	game.load.image('pipe-up', 'assets/pipe-up.png');
+	game.load.image('pipe-down', 'assets/pipe-down.png');
 
-	/*
-	game.load.tilemap('map', 'assets/map/example_map.json', null, Phaser.Tilemap.TILED_JSON);
-	game.load.spritesheet('tileset', 'assets/map/tilesheet.png', 34, 24);
-	game.load.image('sprite', 'assets/sprites/sprite.png');
-	*/
+	game.load.spritesheet('character', 'assets/character.png', 34, 24, 4);
 };
 
 Game.create = function() {
-	
-	Game.sprBackground = game.add.tileSprite(0, 0, game.width, game.height, 'background_repeating');
-	//game.add.tileSprite(0, 0, 128 * 4, 600, 'background_repeating');
+	game.world.setBounds(0, 0, game.width * 10, game.height);
+
+	Game.sprBackground = game.add.tileSprite(0, 0, game.width * 10, game.height, 'background_repeating');
+	Game.sprPlaceholder = game.add.sprite(0, 0, 'pipe-down');
 
 	Game.PlayerMap = {};
 	Game.PlayerListNewState = [];
 
 	Client.Connect();
-
-	/*
-	var map = game.add.tilemap('map');
-	map.addTilesetImage('tilesheet', 'tileset');
-
-	var layer;
-	for (var i = 0; i < map.layers.length; i++) {
-		layer = map.createLayer(i);
-	}
-	//layer.inputEnabled = true;
-	*/
 
 	Game.playerinput();
 };
@@ -49,8 +38,6 @@ Game.playerinput = function() {
 };
 
 Game.update = function() {
-	Game.sprBackground.tilePosition.x -= 1;
-
 	if (Game.PlayerListNewState.length > 0) {
 		for (var i = 0; i < Game.PlayerListNewState.length; i++) {
 			var newstate = Game.PlayerListNewState[i];
@@ -60,6 +47,11 @@ Game.update = function() {
 		}
 		// Could potentially lose a packet here, if we have just received a new one
 		Game.PlayerListNewState.length = 0;
+	}
+
+	if (game.camera.target == null && Game.PlayerMap[Client.socket.id]) {
+		game.camera.follow(Game.PlayerMap[Client.socket.id].sprite);
+		game.camera.deadzone = new Phaser.Rectangle(Math.floor(34 * 2), 0, 1, game.height);
 	}
 };
 
