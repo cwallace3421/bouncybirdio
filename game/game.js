@@ -18,10 +18,10 @@ Game.create = function() {
 	game.world.setBounds(0, 0, Constants.WORLDWIDTH, Constants.WORLDHEIGHT);
 
 	Game.sprBackground = game.add.tileSprite(0, 0, Constants.WORLDWIDTH, Constants.WORLDHEIGHT, 'background_repeating');
-	Game.sprPlaceholder = game.add.sprite(50, 0, 'pipe-down');
 
 	Game.PlayerMap = {};
 	Game.PlayerListNewState = [];
+	Game.initPipePools();
 
 	Client.Connect();
 
@@ -72,6 +72,56 @@ Game.removePlayer = function(id) {
 
 Game.playerExists = function(id) {
 	return Game.PlayerMap[id];
+};
+
+Game.initPipePools = function() {
+	Game.DownPipePool = game.add.group(undefined, 'down-pipe-pool');
+	for (let i = 1; i <= 5; i++) {
+		let parent = game.add.sprite(0, 0, null);
+		parent.anchor.setTo(0.5, 0.5);
+		parent.x = 0;
+		parent.y = (Constants.WORLDHEIGHT / 2); // Comes down from the top of the screen to this y
+		parent.kill();
+
+		let pipestem = game.add.sprite(52, 1, 'pipe');
+		pipestem.anchor.setTo(0.5, 1);
+		pipestem.height = Constants.WORLDHEIGHT;
+		pipestem.x = 0;
+		pipestem.y = 0;
+		parent.addChild(pipestem);
+
+		let pipecap = game.add.sprite(52, 26, 'pipe-down');
+		pipecap.anchor.setTo(0.5, 1);
+		pipecap.x = 0;
+		pipecap.y = 0;
+		parent.addChild(pipecap);
+
+		Game.DownPipePool.add(parent);
+	}
+
+	Game.UpPipePool = game.add.group(undefined, 'up-pipe-pool');
+	for (let i = 1; i <= 5; i++) {
+		let parent = game.add.sprite(0, 0, null);
+		parent.anchor.setTo(0.5, 1);
+		parent.x = 0;
+		parent.y = (Constants.WORLDHEIGHT / 2); // Comes up from the bottom of the screen to this y
+		parent.kill();
+
+		let pipestem = game.add.sprite(52, 1, 'pipe');
+		pipestem.anchor.setTo(0.5, 0);
+		pipestem.height = Constants.WORLDHEIGHT;
+		pipestem.x = 0;
+		pipestem.y = 0;
+		parent.addChild(pipestem);
+
+		let pipecap = game.add.sprite(52, 26, 'pipe-up');
+		pipecap.anchor.setTo(0.5, 0);
+		pipecap.x = 0;
+		pipecap.y = 0;
+		parent.addChild(pipecap);
+
+		Game.UpPipePool.add(parent);
+	}
 };
 
 
