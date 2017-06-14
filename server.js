@@ -21,9 +21,9 @@ const Socket = {
 	$Map: {}
 };
 
-const Pipe = function() {
+const Pipe = function(x, y, dir) {
 	let _self = {
-		id: id,
+		id: guid(),
 		x: 0,
 		y: 0,
 		dir: 0 // 1 = down, -1 = up, 0 = not valid
@@ -65,8 +65,25 @@ const Pipe = function() {
 		return player.x > leftx && (player.x + _.PLAYERWIDTH) < rightx;
 	};
 
-	// TODO add to list (ordered by x)
+	_self.getinitpacket = function() {
+		return _self;
+	};
+
+	Pipe.$List.push(_self);
 	return _self;
+};
+Pipe.$List = [];
+Pipe.$Generate = function() {
+	let prevy = _.WORLDHEIGHT / 2;
+	for (let x = _.VIEWWIDTH; x >= _.WORLDWIDTH; x += 100;) {
+		let y = prevy;
+		let gap = _.PLAYERHEIGHT + (_.PLAYERHEIGHT / 2) + getRandomInt(0, _.PLAYERHEIGHT * 2);
+		// down
+		Player(x, y - (gap / 2), 1);
+		// up
+		Player(x, y + (gap / 2), -1);
+		prevy = y;
+	}
 };
 
 const Player = function(id, nick, x, y, color) {
@@ -277,6 +294,17 @@ setInterval(function() {
 
 function randomInt(low, high) {
 	return Math.floor(Math.random() * (high - low) + low);
+}
+
+function guid() {
+	function s4() {
+		return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+	}
+	return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+}
+
+function getRandomInt(min, max) {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 /*
