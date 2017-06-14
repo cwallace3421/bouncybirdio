@@ -21,6 +21,54 @@ const Socket = {
 	$Map: {}
 };
 
+const Pipe = function() {
+	let _self = {
+		id: id,
+		x: 0,
+		y: 0,
+		dir: 0 // 1 = down, -1 = up, 0 = not valid
+	};
+
+	_self.playercollide = function(player) {
+
+		if (_self.dir == 1) {
+			return _self.pipedown(player);
+		}
+
+		if (_self.dir == -1) {
+			return _self.pipeup(player);
+		}
+
+		console.error('Pipe [' + _self.id + '] has invalid direction: ' + _self.dir);
+		return false;
+	};
+
+	_self.pipedown = function(player) {
+		if (player.y < _self.y) {
+			return true;
+		} else {
+			return _self.pipe(player);
+		}
+	};
+
+	_self.pipeup = function(player) {
+		if (player.y + _.PLAYERHEIGHT > _self.y) {
+			return true;
+		} else {
+			return _self.pipe(player);
+		}
+	};
+
+	_self.pipe = function(player) {
+		let leftx = _self.x - (_.PIPEWIDTH / 2);
+		let rightx = _self.x + (_.PIPEWIDTH / 2);
+		return player.x > leftx && (player.x + _.PLAYERWIDTH) < rightx;
+	};
+
+	// TODO add to list (ordered by x)
+	return _self;
+};
+
 const Player = function(id, nick, x, y, color) {
 	let _self = {
 		id: id,
