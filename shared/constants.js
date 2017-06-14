@@ -5,6 +5,8 @@
 	exports.PLAYERWIDTH = 34;
 	exports.PLAYERHEIGHT = 24;
 
+	exports.PIPEWIDTH = 52;
+
 	exports.VIEWWIDTH = 800;
 	exports.VIEWHEIGHT = 600;
 
