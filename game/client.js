@@ -4,9 +4,14 @@ Client.Connect = function() {
 	Client.socket = io.connect();
 
 	Client.socket.on('init', function(data) {
-		if (data.init) {
-			for (var p in data.init) {
-				Game.addPlayer(data.init[p]);
+		if (data.players) {
+			for (var p in data.players) {
+				Game.addPlayer(data.players[p]);
+			}
+		}
+		if (data.pipes) {
+			for (var p in data.pipes) {
+				Game.addPipe(data.pipes[p]);
 			}
 		}
 	});
