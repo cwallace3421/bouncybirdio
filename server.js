@@ -84,6 +84,21 @@ Pipe.$Generate = function() {
 		Player(x, y + (gap / 2), -1);
 		prevy = y;
 	}
+	Pipe.$List.sort(function(a, b) {
+		if (a.x < b.x)
+			return 1;
+		if (a.x > b.x)
+			return -1;
+		if (a.x === b.x)
+			return 0;
+	});
+};
+Pipe.$GetInitPacket = function() {
+	let packet = [];
+	for (let p = 0; p < Pipe.$List.length; p++;) {
+		packet.push(Pipe.$List[p].getinitpacket());
+	}
+	return packet;
 };
 
 const Player = function(id, nick, x, y, color) {
@@ -213,7 +228,8 @@ Player.$Connect = function(socket) {
 
 	// On connect inform client of all players
 	socket.emit('init', {
-		init: Player.$GetInitPacket()
+		players: Player.$GetInitPacket(),
+		pipes: Pipe.$GetInitPacket()
 	});
 };
 Player.$Disconnect = function(socket) {
