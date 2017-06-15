@@ -10,9 +10,8 @@ Client.Connect = function() {
 			}
 		}
 		if (data.pipes) {
-			for (var p in data.pipes) {
-				Game.addPipe(data.pipes[p]);
-			}
+			console.log(data.pipes);
+			Game.PipeList = data.pipes;
 		}
 	});
 

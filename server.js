@@ -9,13 +9,15 @@ app.use('/game', express.static(__dirname + '/game'));
 app.use('/shared', express.static(__dirname + '/shared'));
 app.use('/assets', express.static(__dirname + '/assets'));
 
+server.listen(process.env.PORT || _.PORT, function() {
+	console.log('Listening on ' + server.address().port);
+	Pipe.$Generate();
+});
+
 app.get('/', function(request, response) {
 	response.sendFile(__dirname + '/index.html');
 });
 
-server.listen(process.env.PORT || _.PORT, function() {
-	console.log('Listening on ' + server.address().port);
-});
 
 const Socket = {
 	$Map: {}
@@ -24,20 +26,20 @@ const Socket = {
 const Pipe = function(x, y, dir) {
 	let _self = {
 		id: guid(),
-		x: 0,
-		y: 0,
-		dir: 0 // 1 = down, -1 = up, 0 = not valid
+		x: x,
+		y: y,
+		dir: dir // 1 = down, -1 = up, 0 = not valid
 	};
 
 	_self.playercollide = function(player) {
 
-		if (_self.dir == 1) {
-			return _self.pipedown(player);
-		}
+		// if (_self.dir == 1) {
+		// 	return _self.pipedown(player);
+		// }
 
-		if (_self.dir == -1) {
-			return _self.pipeup(player);
-		}
+		// if (_self.dir == -1) {
+		// 	return _self.pipeup(player);
+		// }
 
 		console.error('Pipe [' + _self.id + '] has invalid direction: ' + _self.dir);
 		return false;
@@ -75,27 +77,27 @@ const Pipe = function(x, y, dir) {
 Pipe.$List = [];
 Pipe.$Generate = function() {
 	let prevy = _.WORLDHEIGHT / 2;
-	for (let x = _.VIEWWIDTH; x >= _.WORLDWIDTH; x += 100;) {
+	for (let x = _.VIEWWIDTH; x <= _.WORLDWIDTH; x += 100) {
 		let y = prevy;
 		let gap = _.PLAYERHEIGHT + (_.PLAYERHEIGHT / 2) + getRandomInt(0, _.PLAYERHEIGHT * 2);
 		// down
-		Player(x, y - (gap / 2), 1);
+		Pipe(x, y - (gap / 2), 1);
 		// up
-		Player(x, y + (gap / 2), -1);
+		Pipe(x, y + (gap / 2), -1);
 		prevy = y;
 	}
 	Pipe.$List.sort(function(a, b) {
 		if (a.x < b.x)
-			return 1;
-		if (a.x > b.x)
 			return -1;
+		if (a.x > b.x)
+			return 1;
 		if (a.x === b.x)
 			return 0;
 	});
 };
 Pipe.$GetInitPacket = function() {
 	let packet = [];
-	for (let p = 0; p < Pipe.$List.length; p++;) {
+	for (let p = 0; p < Pipe.$List.length; p++) {
 		packet.push(Pipe.$List[p].getinitpacket());
 	}
 	return packet;

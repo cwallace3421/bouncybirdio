@@ -53,6 +53,8 @@ Game.update = function() {
 		game.camera.follow(Game.PlayerMap[Client.socket.id].sprite);
 		game.camera.deadzone = new Phaser.Rectangle(Constants.DEADZONEX, 0, 1, Constants.VIEWHEIGHT);
 	}
+
+	Game.updatePipes();
 };
 
 Game.addPlayer = function(player) {
@@ -74,6 +76,28 @@ Game.playerExists = function(id) {
 	return Game.PlayerMap[id];
 };
 
+Game.updatePipes = function() {
+	for (var p in Game.PipeList) {
+		let pipe = Game.PipeList[p];
+		if (pipe.x > (game.camera.world.x - Constants.PIPEWIDTH) && pipe.x < ((game.camera.world.x + game.camera.world.width) + Constants.PIPEWIDTH)) {
+			// If pipe inside camera, get pipe if sprite doesn't exist
+			if (!Game.PipeList[p].sprite) {
+				if (pipe.dir == 1) {
+					Game.PipeList[p].sprite = Game.DownPipePool.getFirstDead(false, pipe.x, pipe.y);
+				} else if (pipe.dir == -1) {
+					Game.PipeList[p].sprite = Game.UpPipePool.getFirstDead(false, pipe.x, pipe.y);
+				}
+			}
+		} else {
+			// If pipe outside camera, kill sprite if exists and set sprite to null
+			if (Game.PipeList[p].sprite) {
+				Game.PipeList[p].sprite.kill();
+			}
+			Game.PipeList[p].sprite = null;
+		}
+	}
+};
+
 Game.initPipePools = function() {
 	Game.DownPipePool = game.add.group(undefined, 'down-pipe-pool');
 	for (let i = 1; i <= 5; i++) {
@@ -81,6 +105,8 @@ Game.initPipePools = function() {
 		parent.anchor.setTo(0.5, 0.5);
 		parent.x = 0;
 		parent.y = (Constants.WORLDHEIGHT / 2); // Comes down from the top of the screen to this y
+		parent.outOfCameraBoundsKill = true;
+		parent.autoCull = true;
 		parent.kill();
 
 		let pipestem = game.add.sprite(52, 1, 'pipe');
@@ -105,6 +131,8 @@ Game.initPipePools = function() {
 		parent.anchor.setTo(0.5, 1);
 		parent.x = 0;
 		parent.y = (Constants.WORLDHEIGHT / 2); // Comes up from the bottom of the screen to this y
+		parent.outOfCameraBoundsKill = true;
+		parent.autoCull = true;
 		parent.kill();
 
 		let pipestem = game.add.sprite(52, 1, 'pipe');
