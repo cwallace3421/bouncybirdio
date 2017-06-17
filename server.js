@@ -77,9 +77,9 @@ const Pipe = function(x, y, dir) {
 Pipe.$List = [];
 Pipe.$Generate = function() {
 	let prevy = _.WORLDHEIGHT / 2;
-	for (let x = _.VIEWWIDTH; x <= _.WORLDWIDTH; x += 100) {
+	for (let x = _.VIEWWIDTH; x <= _.WORLDWIDTH; x += 350) {
 		let y = prevy;
-		let gap = _.PLAYERHEIGHT + (_.PLAYERHEIGHT / 2) + getRandomInt(0, _.PLAYERHEIGHT * 2);
+		let gap = (_.PLAYERHEIGHT * 2) + (_.PLAYERHEIGHT * getRandomInt(3 , 8));
 		// down
 		Pipe(x, y - (gap / 2), 1);
 		// up
