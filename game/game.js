@@ -77,23 +77,25 @@ Game.playerExists = function(id) {
 };
 
 Game.updatePipes = function() {
-	for (var p in Game.PipeList) {
-		let pipe = Game.PipeList[p];
-		if (pipe.x > (game.camera.world.x - Constants.PIPEWIDTH) && pipe.x < ((game.camera.world.x + game.camera.world.width) + Constants.PIPEWIDTH)) {
-			// If pipe inside camera, get pipe if sprite doesn't exist
-			if (!Game.PipeList[p].sprite) {
+	if (!Game.PipeList)
+		return;
+
+	let pipe = null;
+	for (let i = 0; i < Game.PipeList.length; i++) {
+		pipe = Game.PipeList[i];
+		pipe.sprite = pipe.sprite || null;
+
+		if (Game.pointInBounds(pipe.x, pipe.y, game.camera.x, game.camera.y, game.camera.width, game.camera.height, Constants.PIPEWIDTH)) {
+			if (!pipe.sprite) {
 				if (pipe.dir == 1) {
-					Game.PipeList[p].sprite = Game.DownPipePool.getFirstDead(false, pipe.x, pipe.y);
+					Game.PipeList[i].sprite = Game.DownPipePool.getFirstDead(false, pipe.x, pipe.y);
 				} else if (pipe.dir == -1) {
-					Game.PipeList[p].sprite = Game.UpPipePool.getFirstDead(false, pipe.x, pipe.y);
+					Game.PipeList[i].sprite = Game.UpPipePool.getFirstDead(false, pipe.x, pipe.y);
 				}
 			}
-		} else {
-			// If pipe outside camera, kill sprite if exists and set sprite to null
-			if (Game.PipeList[p].sprite) {
-				Game.PipeList[p].sprite.kill();
-			}
-			Game.PipeList[p].sprite = null;
+		} else if (pipe.sprite && pipe.sprite.alive) {
+			pipe.sprite.kill();
+			pipe.sprite = null;
 		}
 	}
 };
@@ -105,7 +107,6 @@ Game.initPipePools = function() {
 		parent.anchor.setTo(0.5, 0.5);
 		parent.x = 0;
 		parent.y = (Constants.WORLDHEIGHT / 2); // Comes down from the top of the screen to this y
-		parent.outOfCameraBoundsKill = true;
 		parent.autoCull = true;
 		parent.kill();
 
@@ -131,7 +132,6 @@ Game.initPipePools = function() {
 		parent.anchor.setTo(0.5, 1);
 		parent.x = 0;
 		parent.y = (Constants.WORLDHEIGHT / 2); // Comes up from the bottom of the screen to this y
-		parent.outOfCameraBoundsKill = true;
 		parent.autoCull = true;
 		parent.kill();
 
@@ -152,7 +152,9 @@ Game.initPipePools = function() {
 	}
 };
 
-
+Game.pointInBounds = function(px, py, bx, by, bwidth, bheight, offset = 0) {
+	return (px > (bx - offset) && px < (bx + bwidth + offset)) && (py > (by - offset) && py < (by + bheight + offset))
+};
 
 
 
