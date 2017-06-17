@@ -33,38 +33,30 @@ const Pipe = function(x, y, dir) {
 
 	_self.playercollide = function(player) {
 
-		// if (_self.dir == 1) {
-		// 	return _self.pipedown(player);
-		// }
+		if (_self.dir == 1) {
+			return _self.pipedown(player);
+		}
 
-		// if (_self.dir == -1) {
-		// 	return _self.pipeup(player);
-		// }
+		if (_self.dir == -1) {
+			return _self.pipeup(player);
+		}
 
 		console.error('Pipe [' + _self.id + '] has invalid direction: ' + _self.dir);
 		return false;
 	};
 
 	_self.pipedown = function(player) {
-		if (player.y < _self.y) {
-			return true;
-		} else {
-			return _self.pipe(player);
-		}
+		return player.y < _self.y && _self.pipe(player);
 	};
 
 	_self.pipeup = function(player) {
-		if (player.y + _.PLAYERHEIGHT > _self.y) {
-			return true;
-		} else {
-			return _self.pipe(player);
-		}
+		return player.y + _.PLAYERHEIGHT > _self.y && _self.pipe(player);
 	};
 
 	_self.pipe = function(player) {
 		let leftx = _self.x - (_.PIPEWIDTH / 2);
 		let rightx = _self.x + (_.PIPEWIDTH / 2);
-		return player.x > leftx && (player.x + _.PLAYERWIDTH) < rightx;
+		return (player.x + _.PLAYERWIDTH) > leftx && player.x < rightx;
 	};
 
 	_self.getinitpacket = function() {
@@ -101,6 +93,16 @@ Pipe.$GetInitPacket = function() {
 		packet.push(Pipe.$List[p].getinitpacket());
 	}
 	return packet;
+};
+Pipe.$CheckCollision = function(player) {
+	for (let p = 0; p < Pipe.$List.length; p++) {
+		if (player.x < Pipe.$List[p].x - _.PIPEWIDTH) {
+			return false;
+		} else if (Pipe.$List[p].playercollide(player)) {
+			return true;
+		}
+	}
+	return false;
 };
 
 const Player = function(id, nick, x, y, color) {
@@ -148,7 +150,7 @@ const Player = function(id, nick, x, y, color) {
 	};
 
 	_self.updatecollision = function() {
-		if (_self.y > 650) {
+		if (_self.y > 650 || Pipe.$CheckCollision(_self)) {
 			_self.reset();
 		}
 	};
