@@ -2,7 +2,10 @@ var Game = {};
 
 Game.init = function() {
 	game.stage.disableVisibilityChange = true;
-	game.renderer.renderSession.roundPixels = true
+	game.renderer.renderSession.roundPixels = true;
+	game.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
+	Game.resize();
+	window.addEventListener('resize', Game.resize);
 };
 
 Game.preload = function() {
@@ -55,6 +58,12 @@ Game.update = function() {
 	}
 
 	Game.updatePipes();
+};
+
+Game.resize = function() {
+	game.scale.setGameSize(Constants.VIEWHEIGHT * game.scale.aspectRatio, Constants.VIEWHEIGHT);
+	game.scale.refresh();
+	console.log('Window has resized');
 };
 
 Game.addPlayer = function(player) {
@@ -155,8 +164,6 @@ Game.initPipePools = function() {
 Game.pointInBounds = function(px, py, bx, by, bwidth, bheight, offset = 0) {
 	return (px > (bx - offset) && px < (bx + bwidth + offset)) && (py > (by - offset) && py < (by + bheight + offset))
 };
-
-
 
 /*
 

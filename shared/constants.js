@@ -8,7 +8,7 @@
 	exports.PIPEWIDTH = 52;
 
 	exports.VIEWWIDTH = 800;
-	exports.VIEWHEIGHT = 600;
+	exports.VIEWHEIGHT = 1000;
 
 	exports.WORLDWIDTH = exports.VIEWWIDTH * 10;
 	exports.WORLDHEIGHT = exports.VIEWHEIGHT;
