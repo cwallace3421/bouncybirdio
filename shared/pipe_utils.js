@@ -9,9 +9,9 @@ function Generate() {
 		let y = prevy;
 		let gap = (_.PLAYERHEIGHT * 2) + (_.PLAYERHEIGHT * GetRandomInt(3 , 8));
 		// down
-		Realise(new Pipe(x, y - (gap / 2), 1));
+		Realise(new Pipe(guid(), x, y - (gap / 2), 1));
 		// up
-		Realise(new Pipe(x, y + (gap / 2), -1));
+		Realise(new Pipe(guid(), x, y + (gap / 2), -1));
 		prevy = y;
 	}
 	PipeList.sort((a, b) => {
@@ -66,4 +66,11 @@ function Realise(pipe) {
 
 function GetRandomInt(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function guid() {
+	function s4() {
+		return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+	}
+	return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
