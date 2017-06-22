@@ -36,6 +36,8 @@ function Connect(socket, init) {
 			}
 		}
 	});
+
+	socket.emit('init', init);
 }
 
 function Disconnect(socket) {
