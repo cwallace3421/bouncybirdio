@@ -2,9 +2,11 @@ var express = require('express');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
+var _ = require('./shared/constants.js');
 var Player = require('./shared/player.js');
 var PlayerUtils = require('./shared/player_utils.js');
-var _ = require('./shared/constants.js');
+var Pipe = require('./shared/pipe.js');
+var PipeUtils = require('./shared/pipe_utils.js');
 
 app.use('/css', express.static(__dirname + '/css'));
 app.use('/game', express.static(__dirname + '/game'));
@@ -13,7 +15,7 @@ app.use('/assets', express.static(__dirname + '/assets'));
 
 server.listen(process.env.PORT || _.PORT, function() {
 	console.log('Listening on ' + server.address().port);
-	Pipe.$Generate();
+	PipeUtils.Generate();
 });
 
 app.get('/', function(request, response) {
@@ -25,96 +27,13 @@ const Socket = {
 	$Map: {}
 };
 
-const Pipe = function(x, y, dir) {
-	let _self = {
-		id: guid(),
-		x: x,
-		y: y,
-		dir: dir // 1 = down, -1 = up, 0 = not valid
-	};
-
-	_self.playercollide = function(player) {
-
-		if (_self.dir == 1) {
-			return _self.pipedown(player);
-		}
-
-		if (_self.dir == -1) {
-			return _self.pipeup(player);
-		}
-
-		console.error('Pipe [' + _self.id + '] has invalid direction: ' + _self.dir);
-		return false;
-	};
-
-	_self.pipedown = function(player) {
-		return player.y < _self.y && _self.pipe(player);
-	};
-
-	_self.pipeup = function(player) {
-		return player.y + _.PLAYERHEIGHT > _self.y && _self.pipe(player);
-	};
-
-	_self.pipe = function(player) {
-		let leftx = _self.x - (_.PIPEWIDTH / 2);
-		let rightx = _self.x + (_.PIPEWIDTH / 2);
-		return (player.x + _.PLAYERWIDTH) > leftx && player.x < rightx;
-	};
-
-	_self.getinitpacket = function() {
-		return _self;
-	};
-
-	Pipe.$List.push(_self);
-	return _self;
-};
-Pipe.$List = [];
-Pipe.$Generate = function() {
-	let prevy = _.WORLDHEIGHT / 2;
-	for (let x = _.VIEWWIDTH; x <= _.WORLDWIDTH; x += 350) {
-		let y = prevy;
-		let gap = (_.PLAYERHEIGHT * 2) + (_.PLAYERHEIGHT * getRandomInt(3 , 8));
-		// down
-		Pipe(x, y - (gap / 2), 1);
-		// up
-		Pipe(x, y + (gap / 2), -1);
-		prevy = y;
-	}
-	Pipe.$List.sort(function(a, b) {
-		if (a.x < b.x)
-			return -1;
-		if (a.x > b.x)
-			return 1;
-		if (a.x === b.x)
-			return 0;
-	});
-};
-Pipe.$GetInitPacket = function() {
-	let packet = [];
-	for (let p = 0; p < Pipe.$List.length; p++) {
-		packet.push(Pipe.$List[p].getinitpacket());
-	}
-	return packet;
-};
-Pipe.$CheckCollision = function(player) {
-	for (let p = 0; p < Pipe.$List.length; p++) {
-		if (player.x < Pipe.$List[p].x - _.PIPEWIDTH) {
-			return false;
-		} else if (Pipe.$List[p].playercollide(player)) {
-			return true;
-		}
-	}
-	return false;
-};
-
-
 io.on('connection', function(socket) {
 
 	Socket.$Map[socket.id] = socket;
 
 	PlayerUtils.Connect(socket, {
 		players: PlayerUtils.GetInitPacket(),
-		pipes: Pipe.$GetInitPacket()
+		pipes: PipeUtils.GetInitPacket()
 	});
 
 	socket.on('disconnect', function() {
