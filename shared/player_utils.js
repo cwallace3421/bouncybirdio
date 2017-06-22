@@ -6,8 +6,7 @@ const ToCreate = [];
 const ToRemove = [];
 
 function Connect(socket, init) {
-	let player = new Player(socket.id, null, 0, 0, '#00FF00');
-	Realise(player);
+	let player = Realise(new Player(socket.id, null, 0, 0, '#00FF00'));
 
 	socket.on('keypress', function(data) {
 		switch (data.type) {
@@ -90,4 +89,5 @@ function ForEachPlayer(func) {
 function Realise(player) {
 	PlayerMap[player.id] = player;
 	ToCreate.push(player.getInitPacket());
+	return player;
 }
