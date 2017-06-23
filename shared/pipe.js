@@ -35,7 +35,6 @@ class Pipe {
 
 	getInitPacket() {
 		return this;
-		// this packet might contain all the functions and be unnessacrily bloated
 	};
 
 }

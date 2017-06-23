@@ -33,7 +33,8 @@ function Connect(socket, init) {
 				break;
 			}
 			default: {
-				console.log('Unknown keypress type' + data);
+				console.log('Kicking Player [' + socket.id + '] - Unknown keypress type' + data);
+				socket.disconnect();
 			}
 		}
 	});

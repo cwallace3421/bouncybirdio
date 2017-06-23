@@ -9,12 +9,16 @@ function Generate() {
 	for (let x = _.VIEWWIDTH; x <= _.WORLDWIDTH; x += 350) {
 		let y = prevy;
 		let gap = (_.PLAYERHEIGHT * 2) + (_.PLAYERHEIGHT * Utils.GetRandomInt(3 , 8));
+
 		// down
 		Realise(new Pipe(Utils.Guid(), x, y - (gap / 2), 1));
+
 		// up
 		Realise(new Pipe(Utils.Guid(), x, y + (gap / 2), -1));
+
 		prevy = y;
 	}
+	
 	PipeList.sort((a, b) => {
 		if (a.x < b.x)
 			return -1;
