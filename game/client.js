@@ -22,8 +22,12 @@ Client.Connect = function() {
 				}
 			}
 		}
-			
-		Game.PlayerListNewState = data.update || [];
+		
+		if (data.update) {
+			for (var i = 0; i < data.update.length; i++) {
+				Game.addPlayerState(data.update[i].id, data.update[i]);
+			}
+		}
 
 		if (data.remove) {
 			for (let i = 0; i < data.remove.length; i++) {

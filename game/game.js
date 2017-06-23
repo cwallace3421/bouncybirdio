@@ -38,16 +38,41 @@ Game.playerinput = function() {
 };
 
 Game.update = function() {
-	if (Game.PlayerListNewState.length > 0) {
-		for (var i = 0; i < Game.PlayerListNewState.length; i++) {
-			var newstate = Game.PlayerListNewState[i];
 
-			Game.PlayerMap[newstate.id].sprite.x = newstate.x;
-			Game.PlayerMap[newstate.id].sprite.y = newstate.y;
+	var player;
+	var newstate;
+	for (var id in Game.PlayerMap) {
+		player = Game.PlayerMap[id];
+
+		if (!player.states || !player.states.length)
+			continue;
+
+		if (player.states.length > 1) {
+			console.log('state length: ' + player.states.length);
 		}
-		// Could potentially lose a packet here, if we have just received a new one
-		Game.PlayerListNewState.length = 0;
+
+		player.sprite.x = Phaser.Math.linear(player.sprite.x, player.states[0].x, 0.6);
+		player.sprite.y = Phaser.Math.linear(player.sprite.y, player.states[0].y, 0.6);
+
+		if (Phaser.Math.fuzzyEqual(player.sprite.x, player.states[0].x, 1.5) 
+			&& Phaser.Math.fuzzyEqual(player.sprite.y, player.states[0].y, 1.5)) {
+			player.states.shift();
+		}
 	}
+	/*
+	for (var id in Game.PlayerMap) {
+		player = Game.PlayerMap[id];
+
+		if (!player.states || !player.states.length)
+			continue;
+
+		newstate = player.states.shift();
+		if (newstate) {
+			player.sprite.x = newstate.x;
+			player.sprite.y = newstate.y;
+		}
+	}
+	*/
 
 	if (game.camera.target == null && Game.PlayerMap[Client.socket.id]) {
 		game.camera.follow(Game.PlayerMap[Client.socket.id].sprite);
@@ -64,7 +89,12 @@ Game.addPlayer = function(player) {
 	player.sprite.animations.play('flap', 8, true);
 	player.sprite.x = player.x;
 	player.sprite.y = player.y;
+	player.states = [];
 	Game.PlayerMap[player.id] = player;
+};
+
+Game.addPlayerState = function(id, state) {
+	Game.PlayerMap[id].states.push(state);
 };
 
 Game.removePlayer = function(id) {
