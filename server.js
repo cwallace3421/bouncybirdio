@@ -3,6 +3,7 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
 var _ = require('./shared/constants.js');
+var Utils = require('./shared/utils.js');
 var Player = require('./shared/player.js');
 var PlayerUtils = require('./shared/player_utils.js');
 var Pipe = require('./shared/pipe.js');
@@ -14,8 +15,8 @@ app.use('/shared', express.static(__dirname + '/shared'));
 app.use('/assets', express.static(__dirname + '/assets'));
 
 server.listen(process.env.PORT || _.PORT, function() {
+	init();
 	console.log('Listening on ' + server.address().port);
-	PipeUtils.Generate();
 });
 
 app.get('/', function(request, response) {
@@ -23,13 +24,16 @@ app.get('/', function(request, response) {
 });
 
 
-const Socket = {
-	$Map: {}
-};
+let SocketMap = {};
+let Update_Packet = {};
+
+function init() {
+	PipeUtils.Generate();
+}
 
 io.on('connection', function(socket) {
 
-	Socket.$Map[socket.id] = socket;
+	SocketMap[socket.id] = socket;
 
 	PlayerUtils.Connect(socket, {
 		players: PlayerUtils.GetInitPacket(),
@@ -38,13 +42,10 @@ io.on('connection', function(socket) {
 
 	socket.on('disconnect', function() {
 		PlayerUtils.Disconnect(socket);
-		delete Socket.$Map[socket.id];
+		delete SocketMap[socket.id];
 	});
 
 });
-
-
-let Update_Packet;
 
 setInterval(function() {
 
@@ -64,36 +65,15 @@ setInterval(function() {
 		Update_Packet['remove'] = PlayerUtils.ToRemove;
 	}
 
-	for (let s in Socket.$Map) {
-		Socket.$Map[s].emit('update', Update_Packet);
+	for (let key in SocketMap) {
+		SocketMap[key].emit('update', Update_Packet);
 	}
 
-	// Cleanup
 	PlayerUtils.ToCreate.length = 0;
 	PlayerUtils.ToRemove.length = 0;
 
 	debug(5, 'Update_Packet: ', Update_Packet);
 }, 1000 / _.SERVERTICK);
-
-
-/*
-	Helpers
-*/
-
-function randomInt(low, high) {
-	return Math.floor(Math.random() * (high - low) + low);
-}
-
-function guid() {
-	function s4() {
-		return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-	}
-	return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-}
-
-function getRandomInt(min, max) {
-	return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 
 /*
 	Logging

@@ -1,4 +1,5 @@
 const _ = require('./constants.js');
+const Utils = require('./utils.js');
 const Pipe = require('./pipe.js');
 
 const PipeList = [];
@@ -7,11 +8,11 @@ function Generate() {
 	let prevy = _.WORLDHEIGHT / 2;
 	for (let x = _.VIEWWIDTH; x <= _.WORLDWIDTH; x += 350) {
 		let y = prevy;
-		let gap = (_.PLAYERHEIGHT * 2) + (_.PLAYERHEIGHT * GetRandomInt(3 , 8));
+		let gap = (_.PLAYERHEIGHT * 2) + (_.PLAYERHEIGHT * Utils.GetRandomInt(3 , 8));
 		// down
-		Realise(new Pipe(guid(), x, y - (gap / 2), 1));
+		Realise(new Pipe(Utils.Guid(), x, y - (gap / 2), 1));
 		// up
-		Realise(new Pipe(guid(), x, y + (gap / 2), -1));
+		Realise(new Pipe(Utils.Guid(), x, y + (gap / 2), -1));
 		prevy = y;
 	}
 	PipeList.sort((a, b) => {
@@ -50,7 +51,7 @@ module.exports.GetInitPacket = GetInitPacket;
 module.exports.CheckCollision = CheckCollision;
 
 /*
-	Utils
+	Helpers
 */
 
 function ForEachPipe(func) {
@@ -62,15 +63,4 @@ function ForEachPipe(func) {
 function Realise(pipe) {
 	PipeList.push(pipe);
 	return pipe;
-}
-
-function GetRandomInt(min, max) {
-	return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function guid() {
-	function s4() {
-		return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-	}
-	return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
