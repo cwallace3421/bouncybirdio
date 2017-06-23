@@ -37,7 +37,7 @@ function CheckCollision(player) {
 	for (let i = 0; i < PipeList.length; i++) {
 		if (player.x < PipeList[i].x - _.PIPEWIDTH) {
 			return false;
-		} else if (PipeList[i].playerCollide(player)) {
+		} else if (PipeList[i].entityCollide(player, _.PLAYERWIDTH, _.PLAYERHEIGHT)) {
 			return true;
 		}
 	}

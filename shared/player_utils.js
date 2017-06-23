@@ -1,6 +1,7 @@
 const _ = require('./constants.js');
 const Utils = require('./utils.js');
 const Player = require('./player.js');
+const Pipe = require('./pipe.js');
 
 const PlayerMap = {};
 const ToCreate = [];
@@ -61,9 +62,12 @@ function GetUpdatePacket() {
 	return packet;
 }
 
-function UpdatePlayers() {
+function UpdatePlayers(PipeUtils) {
 	ForEachPlayer((player) => {
 		player.update();
+		if (PipeUtils.CheckCollision(player)) {
+			player.reset();
+		}
 	});
 }
 

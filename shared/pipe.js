@@ -9,28 +9,28 @@ class Pipe {
 		this.dir = dir // 1 = down, -1 = up, 0 = not valid
 	}
 
-	playerCollide(player) {
+	entityCollide(entity, width, height) {
 		if (this.dir === 1) {
-			return this.playerCollidePipeDown(player);
+			return this.entityCollidePipeDown(entity, width, height);
 		}
 		if (this.dir === -1) {
-			return this.playerCollidePipeUp(player);
+			return this.entityCollidePipeUp(entity, width, height);
 		}
 		return false;
 	}
 
-	playerCollidePipeDown(player) {
-		return player.y < this.y && this.playerCollidePipeWidth(player);
+	entityCollidePipeDown(entity, width, height) {
+		return entity.y < this.y && this.entityCollidePipeWidth(entity, width);
 	};
 
-	playerCollidePipeUp(player) {
-		return player.y + _.PLAYERHEIGHT > this.y && this.playerCollidePipeWidth(player);
+	entityCollidePipeUp(entity, width, height) {
+		return entity.y + height > this.y && this.entityCollidePipeWidth(entity, width);
 	};
 
-	playerCollidePipeWidth(player) {
+	entityCollidePipeWidth(entity, width) {
 		let leftx = this.x - (_.PIPEWIDTH / 2);
 		let rightx = this.x + (_.PIPEWIDTH / 2);
-		return (player.x + _.PLAYERWIDTH) > leftx && player.x < rightx;
+		return (entity.x + width) > leftx && entity.x < rightx;
 	};
 
 	getInitPacket() {

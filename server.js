@@ -50,7 +50,7 @@ io.on('connection', function(socket) {
 
 setInterval(function() {
 
-	PlayerUtils.UpdatePlayers();
+	PlayerUtils.UpdatePlayers(PipeUtils);
 
 	Update_Packet = {
 		update: PlayerUtils.GetUpdatePacket()

@@ -40,11 +40,6 @@ class Player {
 		this.y += this.yvel * _.SERVERDELTA;
 		this.x += this.xvel * _.SERVERDELTA;
 
-		this.updateCollision();
-	}
-
-	updateCollision() {
-		// if (this.y > 650 || Pipe.$CheckCollision(this)) {
 		if (this.y > 650) {
 			this.reset();
 		}
