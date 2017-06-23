@@ -78,7 +78,7 @@ module.exports.GetUpdatePacket = GetUpdatePacket;
 module.exports.UpdatePlayers = UpdatePlayers;
 
 /*
-	Utils
+	Helpers
 */
 
 function ForEachPlayer(func) {

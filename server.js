@@ -1,13 +1,14 @@
-var express = require('express');
-var app = express();
-var server = require('http').Server(app);
-var io = require('socket.io').listen(server);
-var _ = require('./shared/constants.js');
-var Utils = require('./shared/utils.js');
-var Player = require('./shared/player.js');
-var PlayerUtils = require('./shared/player_utils.js');
-var Pipe = require('./shared/pipe.js');
-var PipeUtils = require('./shared/pipe_utils.js');
+const express = require('express');
+const app = express();
+const server = require('http').Server(app);
+const io = require('socket.io').listen(server);
+
+const _ = require('./shared/constants.js');
+const Utils = require('./shared/utils.js');
+const Player = require('./shared/player.js');
+const PlayerUtils = require('./shared/player_utils.js');
+const Pipe = require('./shared/pipe.js');
+const PipeUtils = require('./shared/pipe_utils.js');
 
 app.use('/css', express.static(__dirname + '/css'));
 app.use('/game', express.static(__dirname + '/game'));
@@ -56,12 +57,10 @@ setInterval(function() {
 	};
 
 	if (PlayerUtils.ToCreate.length) {
-		debug(1, 'Create:', PlayerUtils.ToCreate);
 		Update_Packet['init'] = PlayerUtils.ToCreate;
 	}
 
 	if (PlayerUtils.ToRemove.length) {
-		debug(1, 'Remove:', PlayerUtils.ToRemove);
 		Update_Packet['remove'] = PlayerUtils.ToRemove;
 	}
 
@@ -71,24 +70,5 @@ setInterval(function() {
 
 	PlayerUtils.ToCreate.length = 0;
 	PlayerUtils.ToRemove.length = 0;
-
-	debug(5, 'Update_Packet: ', Update_Packet);
+	
 }, 1000 / _.SERVERTICK);
-
-/*
-	Logging
-*/
-let DEBUG_LEVEL = 1;
-
-function debug(level, message, object) {
-	if (DEBUG_LEVEL == 0)
-		return;
-
-	if (level <= DEBUG_LEVEL) {
-		if (object) {
-			console.log(message, object);
-		} else {
-			console.log(message);
-		}
-	}
-}
