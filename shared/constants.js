@@ -18,7 +18,7 @@
 	exports.STARTX = exports.PLAYERWIDTH * 2;
 	exports.STARTY = Math.floor((exports.WORLDHEIGHT / 2) - exports.PLAYERHEIGHT / 2);
 
-	exports.SERVERTICK = 20;
+	exports.SERVERTICK = 2; //20;
 	exports.SERVERDELTA = 1.0 / exports.SERVERTICK;
 
 	exports.GRAVITY = exports.PLAYERHEIGHT * 18;

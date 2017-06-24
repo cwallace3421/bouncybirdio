@@ -41,23 +41,75 @@ Game.update = function() {
 
 	var player;
 	var newstate;
+	var speed = 220 * (1 / 60);
 	for (var id in Game.PlayerMap) {
 		player = Game.PlayerMap[id];
 
 		if (!player.states || !player.states.length)
 			continue;
 
-		if (player.states.length > 1) {
-			console.log('state length: ' + player.states.length);
+		console.log('state length: ' + player.states.length);
+
+		newstate = player.states[0];
+
+		if (player.sprite.position.equals(newstate)) {
+			player.states.shift();
+			continue;
 		}
 
-		player.sprite.x = Phaser.Math.linear(player.sprite.x, player.states[0].x, 0.6);
-		player.sprite.y = Phaser.Math.linear(player.sprite.y, player.states[0].y, 0.6);
+		if (newstate.processed) {
+			player.sprite.x = newstate.x;
+			player.sprite.y = newstate.y;
+			player.states.shift();
+		} else {
+			console.log('halfway');
+			player.sprite.x = (player.sprite.x + newstate.x) / 2;
+			player.sprite.y = (player.sprite.y + newstate.y) / 2;
+			newstate.processed = true;
+		}
+
+/*
+		newstate = player.states[0];
+
+		// if (Phaser.Math.fuzzyEqual(player.sprite.x, newstate.x, 2) 
+		// 	&& Phaser.Math.fuzzyEqual(player.sprite.y, newstate.y, 2)) {
+		// 	console.log('position equals');
+		// 	player.states.shift();
+		// 	continue;
+		// }
+
+		let oldstate = new Phaser.Point().copyFrom(player.sprite);
+		let distance = Phaser.Point.distance(oldstate, newstate);
+		let direction = new Phaser.Point();
+		Phaser.Point.normalize(Phaser.Point.subtract(newstate, oldstate, new Phaser.Point()), direction);
+
+		player.sprite.x += direction.x * speed;
+		player.sprite.y += direction.y * speed;
+
+		if (Phaser.Point.distance(oldstate, player.sprite) >= distance) {
+			player.sprite.x = newstate.x;
+			player.sprite.y = newstate.y;
+			player.states.shift();
+		}
+
+		// if (Phaser.Math.fuzzyEqual(player.sprite.x, newstate.x, 1.5) 
+		// 	&& Phaser.Math.fuzzyEqual(player.sprite.y, newstate.y, 1.5)) {
+		// 	player.sprite.x = newstate.x;
+		// 	player.sprite.y = newstate.y;
+		// 	player.states.shift();
+		// }
+
+		/*
+		console.log('state length: ' + player.states.length);
+
+		player.sprite.x = Phaser.Math.linear(player.sprite.x, player.states[0].x, 0.01);
+		player.sprite.y = Phaser.Math.linear(player.sprite.y, player.states[0].y, 0.01);
 
 		if (Phaser.Math.fuzzyEqual(player.sprite.x, player.states[0].x, 1.5) 
 			&& Phaser.Math.fuzzyEqual(player.sprite.y, player.states[0].y, 1.5)) {
 			player.states.shift();
 		}
+		*/
 	}
 	/*
 	for (var id in Game.PlayerMap) {
