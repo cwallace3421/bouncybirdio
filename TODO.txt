@@ -1,0 +1,35 @@
+Progress Tracking
+
+Record progress on death
+
+Better generation of pipes
+
+Better start (countdown or whatever / prompt to click)
+
+Sound
+
+Packet smoothing
+
+Packet optimization
+
+Character culling
+
+Replace socket.io
+
+Character nametags
+
+Your character indicator
+
+Leaderboard
+
+Leader indicator
+
+Fullscreen in browser
+
+	Dependant on above:
+
+		New Background
+
+		UI
+
+		Replace flappy bird assets
